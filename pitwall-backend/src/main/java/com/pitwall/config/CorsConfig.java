@@ -18,6 +18,7 @@ public class CorsConfig {
             "http://localhost:5173",
             "http://localhost:3000",
             "https://pitwall.vercel.app",
+            "https://pitwall-mocha.vercel.app",
             "https://*.vercel.app"
           )
           .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
