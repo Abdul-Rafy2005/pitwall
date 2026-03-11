@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { apiUrl } from '../config/api';
 import driverBios from '../config/driverBios';
 import driverRoster2026 from '../config/driverRoster2026';
 
@@ -14,7 +15,7 @@ const DriversPage = () => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
-        const driversRes = await fetch('http://localhost:8080/api/timing/drivers/latest', { signal: controller.signal });
+        const driversRes = await fetch(apiUrl('/api/timing/drivers/latest'), { signal: controller.signal });
 
         clearTimeout(timeoutId);
 

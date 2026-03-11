@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { apiUrl } from '../config/api';
 import driverRoster2026 from '../config/driverRoster2026';
 import teamColors from '../config/teamColors';
 
@@ -248,9 +249,9 @@ const StandingsPage = () => {
 
         // Fetch OpenF1 headshots, backend standings, and driver roster data in parallel
         const [latestResultsResponse, driverStandingsResponse, constructorStandingsResponse] = await Promise.all([
-          fetch('http://localhost:8080/api/timing/results/latest'),
-          fetch('http://localhost:8080/api/standings/drivers'),
-          fetch('http://localhost:8080/api/standings/constructors')
+          fetch(apiUrl('/api/timing/results/latest')),
+          fetch(apiUrl('/api/standings/drivers')),
+          fetch(apiUrl('/api/standings/constructors'))
         ]);
 
         if (!latestResultsResponse.ok) {

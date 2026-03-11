@@ -4,6 +4,7 @@ import TrackMapPanel from '../components/live/TrackMap';
 import DriverDetailPanel from '../components/live/DriverDetailPanel';
 import LastResultsPanel from '../components/live/LastResultsPanel';
 import AICommentaryPanel from '../components/live/AICommentaryPanel';
+import { apiUrl } from '../config/api';
 
 const fallbackSessionWindow = () => {
   const now = new Date();
@@ -54,7 +55,7 @@ const LiveRacePage = () => {
   useEffect(() => {
     const checkSessionStatus = async () => {
       try {
-        const res = await fetch('http://localhost:8080/api/timing/session/latest');
+        const res = await fetch(apiUrl('/api/timing/session/latest'));
         if (!res.ok) {
           throw new Error(`Session API error: ${res.status}`);
         }

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { apiUrl } from '../../config/api';
 
 const DRIVER_TEAM_COLORS = {
   '1': '#3671C6',
@@ -80,7 +81,7 @@ const TrackMapPanel = ({ drivers = [], sessionMeta }) => {
 
     const fetchLocations = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/timing/location/${sessionKey}`);
+        const res = await fetch(apiUrl(`/api/timing/location/${sessionKey}`));
         if (!res.ok) {
           return;
         }

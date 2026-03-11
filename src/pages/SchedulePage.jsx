@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { apiUrl } from '../config/api';
 
 const SchedulePage = () => {
   const [filter, setFilter] = useState('ALL');
@@ -364,7 +365,7 @@ const SchedulePage = () => {
     const fetchRaceResults = async () => {
       try {
         setLoadingResults(true);
-        const response = await fetch('http://localhost:8080/api/timing/results/latest');
+        const response = await fetch(apiUrl('/api/timing/results/latest'));
         if (!response.ok) {
           throw new Error('Failed to fetch race results');
         }

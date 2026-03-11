@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
+import { apiUrl } from '../../config/api';
 
 const toNumber = (value) => {
   const parsed = Number(value);
@@ -48,7 +49,7 @@ const LastResultsPanel = () => {
   useEffect(() => {
     const fetchSessionFallback = async () => {
       try {
-        const sessionRes = await fetch('http://localhost:8080/api/timing/session/latest');
+        const sessionRes = await fetch(apiUrl('/api/timing/session/latest'));
         if (sessionRes.ok) {
           const sessions = await sessionRes.json();
           if (Array.isArray(sessions) && sessions.length > 0) {
@@ -66,7 +67,7 @@ const LastResultsPanel = () => {
 
     const buildFallbackRowsFromLive = async () => {
       try {
-        const res = await fetch('http://localhost:8080/api/timing/live');
+        const res = await fetch(apiUrl('/api/timing/live'));
         if (!res.ok) {
           return [];
         }
@@ -102,7 +103,7 @@ const LastResultsPanel = () => {
 
     const fetchLatestResults = async () => {
       try {
-        const res = await fetch('http://localhost:8080/api/timing/results/latest');
+        const res = await fetch(apiUrl('/api/timing/results/latest'));
         const data = await res.json();
 
         // Only set warning if we have successfully loaded data
@@ -122,7 +123,7 @@ const LastResultsPanel = () => {
         const sessionKey = data.session?.session_key;
         let laps = [];
         if (sessionKey) {
-          const lapsRes = await fetch(`http://localhost:8080/api/timing/laps/${sessionKey}`);
+          const lapsRes = await fetch(apiUrl(`/api/timing/laps/${sessionKey}`));
           if (lapsRes.ok) {
             laps = await lapsRes.json();
           }

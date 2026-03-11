@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Trophy, Star, Flag, Users, ArrowLeft, ArrowRight } from 'lucide-react';
 import GlassCard from '../components/shared/GlassCard';
+import { apiUrl } from '../config/api';
 import driverBios from '../config/driverBios';
 
 const pointsByDriverNumber = {
@@ -35,8 +36,8 @@ const DriverProfilePage = () => {
         const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
         const [driversRes, resultsRes] = await Promise.all([
-          fetch('http://localhost:8080/api/timing/drivers/latest', { signal: controller.signal }),
-          fetch('http://localhost:8080/api/timing/results/latest', { signal: controller.signal })
+          fetch(apiUrl('/api/timing/drivers/latest'), { signal: controller.signal }),
+          fetch(apiUrl('/api/timing/results/latest'), { signal: controller.signal })
         ]);
 
         clearTimeout(timeoutId);

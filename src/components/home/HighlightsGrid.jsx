@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { apiUrl } from '../../config/api';
 
 const HighlightsGrid = () => {
   const [highlights, setHighlights] = useState([]);
@@ -93,7 +94,7 @@ const HighlightsGrid = () => {
   };
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/highlights', {
+    fetch(apiUrl('/api/highlights'), {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       mode: 'cors'

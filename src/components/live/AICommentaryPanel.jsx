@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-
-const API_BASE = 'http://localhost:8080';
+import { apiUrl } from '../../config/api';
 
 const AICommentaryPanel = () => {
   const [isLive, setIsLive] = useState(null); // null=checking, true=live, false=not live
@@ -16,7 +15,7 @@ const AICommentaryPanel = () => {
 
   const checkLive = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/commentary/is-live`);
+      const res = await fetch(apiUrl('/api/commentary/is-live'));
       const data = await res.json();
 
       if (!data.isLive && wasLiveRef.current && !farewellFiredRef.current) {
@@ -39,7 +38,7 @@ const AICommentaryPanel = () => {
 
   const fetchInsights = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/commentary/live`);
+      const res = await fetch(apiUrl('/api/commentary/live'));
       const data = await res.json();
       const content = data?.choices?.[0]?.message?.content;
       if (content) {

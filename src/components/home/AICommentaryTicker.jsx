@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { apiUrl } from '../../config/api';
 
 const AICommentaryTicker = () => {
   const [insights, setInsights] = useState([
@@ -8,7 +9,7 @@ const AICommentaryTicker = () => {
   useEffect(() => {
     const fetchCommentary = async () => {
       try {
-        const res = await fetch('http://localhost:8080/api/commentary/live', {
+        const res = await fetch(apiUrl('/api/commentary/live'), {
           mode: 'cors'
         });
         const data = await res.json();

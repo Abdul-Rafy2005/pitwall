@@ -1,11 +1,11 @@
-import { API_BASE_URL } from '../config/api.js';
+import { apiUrl } from '../config/api.js';
 
 export const fetchLiveTiming = async () => {
-  const res = await fetch(`${API_BASE_URL}/timing/live`);
+  const res = await fetch(apiUrl('/api/timing/live'));
   return res.json();
 };
 
 export const fetchHealth = async () => {
-  const res = await fetch(`${API_BASE_URL}/health`);
+  const res = await fetch(apiUrl('/api/health'));
   return res.json();
 };

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { apiUrl } from '../../config/api';
 
 const fallbackTeamColor = '#9b9b9b';
 
@@ -59,7 +60,7 @@ const LiveLeaderboard = ({ selectedDriver, onSelectDriver, onDriversUpdate, sess
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
         
-        const res = await fetch('http://localhost:8080/api/timing/results/latest', {
+        const res = await fetch(apiUrl('/api/timing/results/latest'), {
           signal: controller.signal
         });
         clearTimeout(timeoutId);
@@ -102,7 +103,7 @@ const LiveLeaderboard = ({ selectedDriver, onSelectDriver, onDriversUpdate, sess
 
     const fetchLaps = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/timing/laps/${sessionKey}`);
+        const res = await fetch(apiUrl(`/api/timing/laps/${sessionKey}`));
         if (!res.ok) {
           return;
         }
@@ -134,7 +135,7 @@ const LiveLeaderboard = ({ selectedDriver, onSelectDriver, onDriversUpdate, sess
   useEffect(() => {
     const fetchTiming = async () => {
       try {
-        const res = await fetch('http://localhost:8080/api/timing/live');
+        const res = await fetch(apiUrl('/api/timing/live'));
         if (!res.ok) {
           throw new Error(`Timing API error: ${res.status}`);
         }

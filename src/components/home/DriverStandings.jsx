@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { apiUrl } from '../../config/api';
 import { teamColors } from '../../config/teamColors';
 
 const DriverStandings = () => {
@@ -13,7 +14,7 @@ const DriverStandings = () => {
     const fetchStandings = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:8080/api/standings/drivers');
+        const response = await fetch(apiUrl('/api/standings/drivers'));
         if (!response.ok) {
           throw new Error('Failed to fetch standings');
         }

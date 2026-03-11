@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { apiUrl } from '../../config/api';
 
 const DRIVER_INFO = {
   '1': { name: 'Max Verstappen', team: 'Red Bull Racing', teamColor: '#3671C6' },
@@ -77,8 +78,8 @@ const DriverDetailPanel = ({ driver }) => {
     const fetchDetails = async () => {
       try {
         const [lapsRes, stintsRes] = await Promise.all([
-          fetch(`http://localhost:8080/api/timing/laps/${sessionKey}`),
-          fetch(`http://localhost:8080/api/timing/tyres/${sessionKey}`)
+          fetch(apiUrl(`/api/timing/laps/${sessionKey}`)),
+          fetch(apiUrl(`/api/timing/tyres/${sessionKey}`))
         ]);
 
         if (lapsRes.ok) {
