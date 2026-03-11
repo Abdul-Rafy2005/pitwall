@@ -77,43 +77,38 @@ public class NewsService {
   }
 
   public Mono<List<GNewsArticle>> getFormulaOneNews() {
-    return Mono.fromCallable(() -> {
-      // Check cache
-      if (cachedResponse != null && (System.currentTimeMillis() - cachedResponseTimestamp) < CACHE_TTL_MS) {
-        log.debug("Returning cached news articles");
-        return cachedResponse.articles != null ? cachedResponse.articles : new ArrayList<>();
-      }
+    // Check cache first
+    if (cachedResponse != null && (System.currentTimeMillis() - cachedResponseTimestamp) < CACHE_TTL_MS) {
+      log.debug("Returning cached news articles");
+      List<GNewsArticle> articles = (cachedResponse.articles != null) ? cachedResponse.articles : new ArrayList<>();
+      return Mono.just(articles);
+    }
 
-      // Fetch from API
-      return null;
-    }).flatMap(cached -> {
-      if (cached != null) {
-        return Mono.just(cached);
-      }
+    // Cache is invalid or empty, fetch from API
+    if (apiKey == null || apiKey.isEmpty()) {
+      log.error("GNews API key not configured");
+      List<GNewsArticle> emptyList = new ArrayList<>();
+      return Mono.just(emptyList);
+    }
 
-      // Fetch from GNews API
-      if (apiKey == null || apiKey.isEmpty()) {
-        log.error("GNews API key not configured");
-        return Mono.just(new ArrayList<>());
-      }
-
-      return webClient.get()
-        .uri("/search?q=Formula+1&lang=en&max=8&apikey=" + apiKey)
-        .retrieve()
-        .bodyToMono(GNewsResponse.class)
-        .doOnNext(response -> {
-          // Cache the response
-          this.cachedResponse = response;
-          this.cachedResponseTimestamp = System.currentTimeMillis();
-          log.debug("Cached GNews response for {} ms", CACHE_TTL_MS);
-        })
-        .map(response -> response.articles != null ? response.articles : new ArrayList<>())
-        .onErrorResume(error -> {
-          log.error("Failed to fetch from GNews API: {}", error.getMessage());
-          // Return empty list instead of error
-          return Mono.just(new ArrayList<>());
-        })
-        .doOnError(e -> log.error("Error fetching news: {}", e.getMessage()));
-    });
+    return webClient.get()
+      .uri("/search?q=Formula+1&lang=en&max=8&apikey=" + apiKey)
+      .retrieve()
+      .bodyToMono(GNewsResponse.class)
+      .doOnNext(response -> {
+        // Cache the response
+        this.cachedResponse = response;
+        this.cachedResponseTimestamp = System.currentTimeMillis();
+        log.debug("Cached GNews response for {} ms", CACHE_TTL_MS);
+      })
+      .map(response -> {
+        List<GNewsArticle> articles = (response.articles != null) ? response.articles : new ArrayList<>();
+        return articles;
+      })
+      .onErrorResume(error -> {
+        log.error("Failed to fetch from GNews API: {}", error.getMessage());
+        List<GNewsArticle> emptyList = new ArrayList<>();
+        return Mono.just(emptyList);
+      });
   }
 }
