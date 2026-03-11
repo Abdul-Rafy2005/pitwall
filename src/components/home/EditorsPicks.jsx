@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { saveArticleForTab } from '../../services/newsTabStore';
+import { apiUrl } from '../../config/api';
 
 const NEWS_CACHE_TTL_MS = 15 * 60 * 1000;
 let cachedNewsArticles = null;
@@ -57,26 +58,16 @@ const EditorsPicks = () => {
         return;
       }
 
-      const apiKey = import.meta.env.VITE_GNEWS_API_KEY;
-      if (!apiKey || apiKey === 'your_gnews_api_key_here') {
-        throw new Error('Missing VITE_GNEWS_API_KEY');
-      }
-
-      const endpoint = `https://gnews.io/api/v4/search?q=Formula+1&lang=en&max=8&apikey=${apiKey}`;
+      const endpoint = apiUrl('/api/news');
       const response = await fetch(endpoint);
+      
       if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-          throw new Error('Invalid or unauthorized GNews API key');
-        }
-        if (response.status === 429) {
-          throw new Error('GNews daily request limit reached');
-        }
-        throw new Error(`GNews API error: ${response.status}`);
+        throw new Error(`Backend API error: ${response.status}`);
       }
 
       const data = await response.json();
-      const normalizedArticles = Array.isArray(data?.articles)
-        ? data.articles
+      const normalizedArticles = Array.isArray(data)
+        ? data
           .filter((item) => item?.title && item?.url)
           .slice(0, 8)
           .map((item, index) => ({
@@ -100,19 +91,13 @@ const EditorsPicks = () => {
       cachedNewsFetchedAt = Date.now();
       setArticles(normalizedArticles);
     } catch (fetchError) {
-      console.error('Failed to load GNews articles:', fetchError);
+      console.error('Failed to load news articles:', fetchError);
       setError('News unavailable — check back soon');
       const message = String(fetchError?.message || '').toLowerCase();
-      if (message.includes('missing vite_gnews_api_key')) {
-        setErrorHint('Add your GNews key in .env as VITE_GNEWS_API_KEY and restart the dev server.');
-      } else if (message.includes('invalid or unauthorized')) {
-        setErrorHint('Your API key is invalid or not active yet. Verify it in your GNews dashboard.');
-      } else if (message.includes('daily request limit')) {
-        setErrorHint('You hit the free-tier limit (100/day). Try again after reset or use a different key.');
-      } else if (message.includes('failed to fetch')) {
-        setErrorHint('Network/CORS issue while contacting GNews. Check internet or API availability.');
+      if (message.includes('failed to fetch')) {
+        setErrorHint('Network error while contacting the news service. Check your connection.');
       } else {
-        setErrorHint('Please retry in a moment. If this persists, verify your GNews API key and quota.');
+        setErrorHint('Please retry in a moment. The news service may be temporarily unavailable.');
       }
     } finally {
       setLoading(false);
