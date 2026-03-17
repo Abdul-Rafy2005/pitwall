@@ -7,11 +7,14 @@ const SchedulePage = () => {
   const [filter, setFilter] = useState('ALL');
   const nextRaceRef = useRef(null);
   const navigate = useNavigate();
+  const [scheduleRaces, setScheduleRaces] = useState([]);
+  const [loadingSchedule, setLoadingSchedule] = useState(true);
   const [raceResults, setRaceResults] = useState(null);
   const [loadingResults, setLoadingResults] = useState(true);
 
   // Calculate race status dynamically based on current time
   const getRaceStatus = (raceUTC) => {
+    if (!raceUTC) return 'upcoming';
     const now = new Date();
     const raceTime = new Date(raceUTC);
     // Add 2 hours to race start time to account for race duration
@@ -25,6 +28,7 @@ const SchedulePage = () => {
 
   // Check if a session has passed
   const isSessionPast = (sessionUTC) => {
+    if (!sessionUTC) return false;
     const now = new Date();
     const sessionTime = new Date(sessionUTC);
     // Add 2 hours buffer for session duration
@@ -34,13 +38,14 @@ const SchedulePage = () => {
 
   // Check if race is truly next (hasn't started yet)
   const isRaceNext = (raceUTC) => {
+    if (!raceUTC) return false;
     const now = new Date();
     const raceTime = new Date(raceUTC);
     return now < raceTime;
   };
 
-  // Complete 2026 season calendar
-  const races = [
+  // Fallback schedule if live endpoint is unavailable
+  const fallbackRaces = [
     {
       round: 1,
       country: 'Australia',
@@ -337,8 +342,35 @@ const SchedulePage = () => {
     }
   ];
 
+  const races = scheduleRaces.length > 0 ? scheduleRaces : fallbackRaces;
+
+  useEffect(() => {
+    const fetchSchedule = async () => {
+      try {
+        setLoadingSchedule(true);
+        const response = await fetch(apiUrl('/api/schedule/current'));
+        if (!response.ok) {
+          throw new Error(`Schedule API error: ${response.status}`);
+        }
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setScheduleRaces(data);
+        }
+      } catch (error) {
+        console.error('Failed to load live schedule, using fallback:', error);
+      } finally {
+        setLoadingSchedule(false);
+      }
+    };
+
+    fetchSchedule();
+    const interval = setInterval(fetchSchedule, 10 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Convert UTC to PKT (UTC+5)
   const convertToPKT = (utcString) => {
+    if (!utcString) return null;
     const date = new Date(utcString);
     date.setHours(date.getHours() + 5);
     return date;
@@ -346,6 +378,9 @@ const SchedulePage = () => {
 
   // Format date for display
   const formatDateTime = (date) => {
+    if (!date || Number.isNaN(date.getTime())) {
+      return { date: 'TBD', time: '--:--' };
+    }
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const day = date.getDate();
     const month = months[date.getMonth()];
@@ -574,7 +609,7 @@ const SchedulePage = () => {
                 TOTAL ROUNDS
               </p>
               <p style={{ color: 'white', fontSize: '36px', fontWeight: 900, fontFamily: 'Titillium Web' }}>
-                24
+                {racesWithStatus.length}
               </p>
             </div>
 
@@ -589,7 +624,7 @@ const SchedulePage = () => {
                 SPRINT WEEKENDS
               </p>
               <p style={{ color: '#FF6B00', fontSize: '36px', fontWeight: 900, fontFamily: 'Titillium Web' }}>
-                6
+                {racesWithStatus.filter(r => r.sprint).length}
               </p>
             </div>
           </div>
@@ -640,7 +675,7 @@ const SchedulePage = () => {
             letterSpacing: '0.08em'
           }}>
             <span>ROUND 1</span>
-            <span>ROUND 24</span>
+            <span>ROUND {racesWithStatus.length || '-'}</span>
           </div>
         </div>
       </div>
