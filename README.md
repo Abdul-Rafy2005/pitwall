@@ -25,7 +25,13 @@
     <img src="https://img.shields.io/badge/Render-Deployed-purple?style=for-the-badge&logo=render" alt="Render" />
   </p>
 
-  <img src="Screenshot%202026-03-07%20230301.png" alt="PitWall Dashboard Screenshot" style="border-radius: 8px; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+  <img src="Dashboard.png" alt="PitWall Dashboard" style="border-radius: 8px; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+
+  <p align="center">
+    <img src="Live%20race%20scoreboard.png" alt="Live Race Scoreboard" width="48%" style="border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+    &nbsp;
+    <img src="Driver%20standing.png" alt="Driver Standings" width="48%" style="border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+  </p>
 </div>
 
 <hr />
