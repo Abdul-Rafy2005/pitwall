@@ -69,14 +69,8 @@ The entire frontend is built on a custom design system utilizing Tailwind CSS an
 
 PitWall employs a strictly decoupled, service-oriented architecture.
 
-```mermaid
-graph TD
-    Client[React 18 Frontend - Vercel] <-->|REST API & WebSockets| Server[Spring Boot Backend - Render]
-    Server <-->|In-Memory Cache| Redis[(Redis Cache)]
-    Server <-->|Live Telemetry Streams| OpenF1[OpenF1 API]
-    Server <-->|NLP Commentary| Claude[Claude API]
-    Server <-->|Video Metadata| YT[YouTube API]
-```
+![Pitwall architecture](architecture.png)
+
 
 ### Frontend Architecture (Client)
 - **React 18 & Vite:** Chosen for lightning-fast HMR during development and optimized, minimized production bundles. React 18's concurrent rendering allows the UI to stay responsive during heavy telemetry updates.
@@ -89,6 +83,15 @@ graph TD
 - **Spring WebFlux:** Replaces blocking I/O with reactive, non-blocking HTTP clients. This is critical when the backend needs to fetch data from OpenF1, YouTube, and Claude simultaneously without bottlenecking the main thread.
 - **WebSockets:** Establishes a persistent, bi-directional communication channel with the React frontend, pushing updates instantly instead of relying on inefficient client-side polling.
 - **Redis Cache:** Acts as a high-speed, in-memory data store. Heavy API responses and historical driver standings are cached in Redis to drastically reduce load times and respect external API rate limits.
+
+```mermaid
+graph TD
+    Client[React 18 Frontend - Vercel] <-->|REST API & WebSockets| Server[Spring Boot Backend - Render]
+    Server <-->|In-Memory Cache| Redis[(Redis Cache)]
+    Server <-->|Live Telemetry Streams| OpenF1[OpenF1 API]
+    Server <-->|NLP Commentary| Claude[Claude API]
+    Server <-->|Video Metadata| YT[YouTube API]
+```
 
 ---
 
